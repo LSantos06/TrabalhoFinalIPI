@@ -9,8 +9,8 @@ Yoriginal = YCbCroriginal(:,:,1);
 %% Median Filter (reduce salt and pepper noise):
 %O tamanho do filtro de mediana pode ser ajustado.
 Filtered = medfilt2(Yoriginal, [7 7], 'symmetric');
-%A princÌpio, utilizaremos o mÈtodo recomendado pelo artigo. Quando todas
-%as esapas estiverem concluÌdas, testaremos diferentes mÈtodos de detecÁ„o
+%A princ√≠pio, utilizaremos o m√©todo recomendado pelo artigo. Quando todas
+%as esapas estiverem conclu√≠das, testaremos diferentes m√©todos de detec√ß√£o
 %de bordas e escolheremos o que tem o melhor resultado subjetivo.
 Edges = edge(Filtered, 'canny');
 %Edges = edge(Filtered, 'sobel');
@@ -19,4 +19,36 @@ Edges = edge(Filtered, 'canny');
 ThickEdges = imdilate(Edges, strel('square', 2));
 
 %% Edge filter:
+%Segundo o artigo, o valor m√≠nimo de 10 na hora do  produz os resultados mais satisfat√≥rios
+EdgeFilter = bwareaopen(ThickEdges, 10);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% T√Å ERRADO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bilateral Filter(Color):
+[linhas, colunas] = size(CRoriginal); 
+CR_Menor = imresize(CRoriginal, [linhas/4 colunas/4]); % Diminuindo tamanho da imagem para diminuir peso do processamento
+Bilateral_Filter = fspecial('gaussian', [9 9]);
+for aux=1: 14
+    CR_Menor = imfilter(CR_Menor, Bilateral_Filter);% Aplicando Bilateral Filtering com M√°scara 9x9 por 14 vezes
+end
+CR_Maior = imresize(CR_Menor, [linhas colunas]); % Colocando imagem para o tamanho original
+
+%% Median Filter(Reduce noise after resizing):
+Median_Filter = medfilt2(CR_Maior, [7 7], 'symmetric');
+
+%% Quantize Colors:
+%reducao_cor = 24;
+%funcao = @(x) (x/24)*24;
+%funcao = (pixel/reducao_cor)*reducao_cor;
+%Quantize = arrayfun(funcao, Median_Filter);
+
+thresh = multithresh(Median_Filter,20);
+value = [0 thresh(2:end) 255];
+quant = imquantize(Median_Filter, thresh, value);
+
+%% Recombine
+
+overlay_im = cat(3, EdgeFilter, Cboriginal, quant);
+overlay_im = rgb2ycbcr(overlay_im);
+imshow(overlay_im);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% T√Å ERRADO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %TODO
