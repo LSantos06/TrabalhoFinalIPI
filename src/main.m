@@ -42,23 +42,23 @@ for num = 1:numeroImagens
     % as esapas estiverem concluídas, testaremos diferentes métodos de detecção
     % de bordas e escolheremos o que tem o melhor resultado subjetivo.
     bordas = edge(filtroMediana, 'canny');
-    %bordas = edge(Filtered, 'sobel');
 
     %% Operacoes morfologicas:
     % Dilatando as bordas
     bordasGrossas = imdilate(bordas, strel('square', 2));
-
+    
     %% Filtrando as bordas:
     % Diminuindo a quantidade de bordas 
-    filtroBordas = bwareaopen(bordasGrossas, 300); 
-    figure, imshow(filtroBordas), title('Bordas Detectadas e Expandidas da Imagem Original');
+    filtroBordas = bwareaopen(bordasGrossas, 400); 
+    %figure, imshow(filtroBordas), title('Bordas Detectadas e Expandidas da Imagem Original');
+    
     filtroBordas = logical(filtroBordas);
     
     %% Filtro bilateral:
     % Quantizando as cores da imagem original em rgb
-    [quantizacaoCores,mapaCores] = rgb2ind(rgbOriginal,6,'nodither');
+    [quantizacaoCores,mapaCores] = rgb2ind(rgbOriginal,8,'nodither');
     quantizacaoCores = ind2rgb(quantizacaoCores,mapaCores);
-    figure, imshow(quantizacaoCores), title('Cor Quantizada');
+    %figure, imshow(quantizacaoCores), title('Cor Quantizada');
     
     % Passando a imagem quantizada para ycbcr
     quantizadaYCbCr = rgb2ycbcr(quantizacaoCores);
@@ -83,4 +83,5 @@ for num = 1:numeroImagens
     end
 
     figure, imshow(quantizacaoCores), title('Resultado Recombinação');
+  
 end
