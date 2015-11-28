@@ -1,7 +1,13 @@
 %% Edges
+close all;
+RGBoriginal =imread('dolphin-01.jpg');
+figure; imshow(RGBoriginal);
+title('Imagem Original');
 
-RGBoriginal = imread('../images/lamborghini-rainbow.jpg');
+rgb = RGBoriginal; 
+
 YCbCroriginal = rgb2ycbcr(RGBoriginal);
+RGBoriginal = double(imread('dolphin-01.jpg')/255);
 Yoriginal = YCbCroriginal(:,:,1);
 % All edge processing tasks are performed with a single-channel grayscale 
 % image derived from the luminance values of the input.
@@ -9,8 +15,8 @@ Yoriginal = YCbCroriginal(:,:,1);
 %% Median Filter (reduce salt and pepper noise):
 %O tamanho do filtro de mediana pode ser ajustado.
 Filtered = medfilt2(Yoriginal, [7 7], 'symmetric');
-%A princ√≠pio, utilizaremos o m√©todo recomendado pelo artigo. Quando todas
-%as esapas estiverem conclu√≠das, testaremos diferentes m√©todos de detec√ß√£o
+%A princÌpio, utilizaremos o mÈtodo recomendado pelo artigo. Quando todas
+%as esapas estiverem concluÌdas, testaremos diferentes mÈtodos de detecÁ„o
 %de bordas e escolheremos o que tem o melhor resultado subjetivo.
 Edges = edge(Filtered, 'canny');
 %Edges = edge(Filtered, 'sobel');
@@ -19,36 +25,34 @@ Edges = edge(Filtered, 'canny');
 ThickEdges = imdilate(Edges, strel('square', 2));
 
 %% Edge filter:
-%Segundo o artigo, o valor m√≠nimo de 10 na hora do  produz os resultados mais satisfat√≥rios
-EdgeFilter = bwareaopen(ThickEdges, 10);
+EdgeFilter = bwareaopen(ThickEdges, 300); % Diminui a quantidade de bordas %
+figure; imshow(EdgeFilter);
+EdgeFilter = logical(EdgeFilter);
+title('Bordas Detectadas e Expandidas da Imagem Original');
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% T√Å ERRADO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Bilateral Filter(Color):
-[linhas, colunas] = size(CRoriginal); 
-CR_Menor = imresize(CRoriginal, [linhas/4 colunas/4]); % Diminuindo tamanho da imagem para diminuir peso do processamento
-Bilateral_Filter = fspecial('gaussian', [9 9]);
-for aux=1: 14
-    CR_Menor = imfilter(CR_Menor, Bilateral_Filter);% Aplicando Bilateral Filtering com M√°scara 9x9 por 14 vezes
+[ColorQuantization,colormap] = rgb2ind(rgb,6,'nodither');
+ColorQuantization = ind2rgb(ColorQuantization,colormap);
+figure, imshow(ColorQuantization);
+title('Cor Quantizada');
+
+Color_YCBCR = rgb2ycbcr(ColorQuantization);
+Y_Original = Color_YCBCR(:,:,1);
+CB_Original = Color_YCBCR(:,:,2);
+CR_Original = Color_YCBCR(:,:,3);
+
+%% Recombine(Overlay Edge Imagem with Color Image)
+[linhas colunas] = size(EdgeFilter);
+
+for x=1:linhas
+    for y=1:colunas
+        if EdgeFilter(x,y) == 1
+            ColorQuantization(x,y,1) = 0;
+            ColorQuantization(x,y,2) = 0;
+            ColorQuantization(x,y,3) = 0;
+        end
+    end
 end
-CR_Maior = imresize(CR_Menor, [linhas colunas]); % Colocando imagem para o tamanho original
 
-%% Median Filter(Reduce noise after resizing):
-Median_Filter = medfilt2(CR_Maior, [7 7], 'symmetric');
-
-%% Quantize Colors:
-%reducao_cor = 24;
-%funcao = @(x) (x/24)*24;
-%funcao = (pixel/reducao_cor)*reducao_cor;
-%Quantize = arrayfun(funcao, Median_Filter);
-
-thresh = multithresh(Median_Filter,20);
-value = [0 thresh(2:end) 255];
-quant = imquantize(Median_Filter, thresh, value);
-
-%% Recombine
-
-overlay_im = cat(3, EdgeFilter, Cboriginal, quant);
-overlay_im = rgb2ycbcr(overlay_im);
-imshow(overlay_im);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% T√Å ERRADO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%TODO
+figure, imshow(ColorQuantization);
+title('Resultado RecombinaÁ„o');
