@@ -1,58 +1,86 @@
-%% Edges
+%% Universidade de Brasilia
+% Introducao ao Processamento de Imagens 2015/2
+% Trabalho Final
+% Grupo: Danillo Neves - 14/01, 
+%        Lucas Santos - 14/0151010 e
+%        Ricardo Kury - 14/01
+
+% Tema 7 - Filtro Cartoon
+
 close all;
-RGBoriginal =imread('dolphin-01.jpg');
-figure; imshow(RGBoriginal);
-title('Imagem Original');
 
-rgb = RGBoriginal; 
+% Obtendo o diretorio das imagens
+cd ../images/;
+diretorio = dir ('*.jpg');
+numeroImagens = length(diretorio);
 
-YCbCroriginal = rgb2ycbcr(RGBoriginal);
-RGBoriginal = double(imread('dolphin-01.jpg')/255);
-Yoriginal = YCbCroriginal(:,:,1);
-% All edge processing tasks are performed with a single-channel grayscale 
-% image derived from the luminance values of the input.
+% Percorrendo o diretorio, uma imagem por vez
+for num = 1:numeroImagens
+    
+    %% Deteccao das bordas
+    % Lendo as imagens
+    imagemOriginal = imread(diretorio(num).name);
+    figure, imshow(imagemOriginal), title('Imagem Original');
 
-%% Median Filter (reduce salt and pepper noise):
-%O tamanho do filtro de mediana pode ser ajustado.
-Filtered = medfilt2(Yoriginal, [7 7], 'symmetric');
-%A princípio, utilizaremos o método recomendado pelo artigo. Quando todas
-%as esapas estiverem concluídas, testaremos diferentes métodos de detecção
-%de bordas e escolheremos o que tem o melhor resultado subjetivo.
-Edges = edge(Filtered, 'canny');
-%Edges = edge(Filtered, 'sobel');
+    % Guardando a imagem original em rgb
+    rgbOriginal = imagemOriginal; 
+    
+    % Passando a imagem original para ycbcr
+    yCbCrOriginal = rgb2ycbcr(imagemOriginal);
+    
+    % Escalando a imagem em tons de cinza
+    imagemOriginal = double(imagemOriginal/255);
+    
+    % Obtendo a luminância da imagem original
+    yQuantizado = yCbCrOriginal(:,:,1);
 
-%% Morphological operations:
-ThickEdges = imdilate(Edges, strel('square', 2));
+    %% Filtro de mediana pra reduzir o ruido
+    % O tamanho do filtro de mediana pode ser ajustado.
+    filtroMediana = medfilt2(yQuantizado, [7 7], 'symmetric');
+    
+    % A princípio, utilizaremos o método recomendado pelo artigo. Quando todas
+    % as esapas estiverem concluídas, testaremos diferentes métodos de detecção
+    % de bordas e escolheremos o que tem o melhor resultado subjetivo.
+    bordas = edge(filtroMediana, 'canny');
+    %bordas = edge(Filtered, 'sobel');
 
-%% Edge filter:
-EdgeFilter = bwareaopen(ThickEdges, 300); % Diminui a quantidade de bordas %
-figure; imshow(EdgeFilter);
-EdgeFilter = logical(EdgeFilter);
-title('Bordas Detectadas e Expandidas da Imagem Original');
+    %% Operacoes morfologicas:
+    % Dilatando as bordas
+    bordasGrossas = imdilate(bordas, strel('square', 2));
 
-%% Bilateral Filter(Color):
-[ColorQuantization,colormap] = rgb2ind(rgb,6,'nodither');
-ColorQuantization = ind2rgb(ColorQuantization,colormap);
-figure, imshow(ColorQuantization);
-title('Cor Quantizada');
+    %% Filtrando as bordas:
+    % Diminuindo a quantidade de bordas 
+    filtroBordas = bwareaopen(bordasGrossas, 300); 
+    figure, imshow(filtroBordas), title('Bordas Detectadas e Expandidas da Imagem Original');
+    filtroBordas = logical(filtroBordas);
+    
+    %% Filtro bilateral:
+    % Quantizando as cores da imagem original em rgb
+    [quantizacaoCores,mapaCores] = rgb2ind(rgbOriginal,6,'nodither');
+    quantizacaoCores = ind2rgb(quantizacaoCores,mapaCores);
+    figure, imshow(quantizacaoCores), title('Cor Quantizada');
+    
+    % Passando a imagem quantizada para ycbcr
+    quantizadaYCbCr = rgb2ycbcr(quantizacaoCores);
+    
+    % Separando as camadas da imagem quantizada em ycbcr
+    yQuantizado = quantizadaYCbCr(:,:,1);
+    cbQuantizado = quantizadaYCbCr(:,:,2);
+    crQuantizado = quantizadaYCbCr(:,:,3);
 
-Color_YCBCR = rgb2ycbcr(ColorQuantization);
-Y_Original = Color_YCBCR(:,:,1);
-CB_Original = Color_YCBCR(:,:,2);
-CR_Original = Color_YCBCR(:,:,3);
+    %% Recombinacao das imagens (cores + bordas)
+    % Obtendo o tamanho da imagem com as bordas filtradas
+    [linhas, colunas] = size(filtroBordas);
 
-%% Recombine(Overlay Edge Imagem with Color Image)
-[linhas colunas] = size(EdgeFilter);
-
-for x=1:linhas
-    for y=1:colunas
-        if EdgeFilter(x,y) == 1
-            ColorQuantization(x,y,1) = 0;
-            ColorQuantization(x,y,2) = 0;
-            ColorQuantization(x,y,3) = 0;
+    for x=1:linhas
+        for y=1:colunas
+            if filtroBordas(x,y) == 1
+                quantizacaoCores(x,y,1) = 0;
+                quantizacaoCores(x,y,2) = 0;
+                quantizacaoCores(x,y,3) = 0;
+            end
         end
     end
-end
 
-figure, imshow(ColorQuantization);
-title('Resultado Recombinação');
+    figure, imshow(quantizacaoCores), title('Resultado Recombinação');
+end
