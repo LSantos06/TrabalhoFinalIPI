@@ -1,5 +1,5 @@
 # Filtro Cartoon
-Projeto da disciplina de Métodos de Programação (2/2015) na Universidade de Brasília
+Projeto da disciplina de Introdução ao Processamento de Imagens (2/2015) na Universidade de Brasília
 
   Fazer um programa que receba como entrada uma imagem real e aplica um
 processamento de imagens para dar como saída uma imagem que pareça ter sido desenhada a
