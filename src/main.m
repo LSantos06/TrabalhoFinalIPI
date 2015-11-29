@@ -20,7 +20,7 @@ for num = 1:numeroImagens
     %% Deteccao das bordas
     % Lendo as imagens
     imagemOriginal = imread(diretorio(num).name);
-    figure, imshow(imagemOriginal), title('Imagem Original');
+    %figure, imshow(imagemOriginal), title('Imagem Original');
 
     % Guardando a imagem original em rgb
     rgbOriginal = imagemOriginal; 
@@ -56,7 +56,7 @@ for num = 1:numeroImagens
     
     %% Filtro bilateral:
     % Quantizando as cores da imagem original em rgb
-    [quantizacaoCores,mapaCores] = rgb2ind(rgbOriginal,8,'nodither');
+    [quantizacaoCores,mapaCores] = rgb2ind(rgbOriginal,7,'nodither');
     quantizacaoCores = ind2rgb(quantizacaoCores,mapaCores);
     %figure, imshow(quantizacaoCores), title('Cor Quantizada');
     
@@ -82,6 +82,8 @@ for num = 1:numeroImagens
         end
     end
 
-    figure, imshow(quantizacaoCores), title('Resultado Recombinação');
-  
+    %figure, imshow(quantizacaoCores), title('Resultado Recombinação');
+    figure, set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
+    subplot(1,2,1), imshow(rgbOriginal), title('Original');
+    subplot(1,2,2), imshow(quantizacaoCores), title('Cartoon');
 end
