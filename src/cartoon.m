@@ -15,12 +15,12 @@ diretorio = dir ('*.jpg');
 numeroImagens = length(diretorio);
 
 % Percorrendo o diretorio, uma imagem por vez
-for num = 1:1
+for num = 1:numeroImagens
     
     %% Deteccao das bordas
     % Lendo as imagens
-    imagemOriginal = imread('../images/brasilia.jpg');
-    %imagemOriginal = imread(diretorio(num).name);
+    %imagemOriginal = imread('../images/brasilia.jpg');
+    imagemOriginal = imread(diretorio(num).name);
     %figure, imshow(imagemOriginal), title('Imagem Original');
 
     % Guardando a imagem original em rgb
@@ -79,14 +79,16 @@ for num = 1:1
                 quantizacaoCores(x,y,1) = 0;
                 quantizacaoCores(x,y,2) = 0;
                 quantizacaoCores(x,y,3) = 0;
-            end
-        end
-    end
+            end % if %
+        end % for %
+    end % for %
 
-    %figure, imshow(quantizacaoCores), title('Resultado Recombinação');
+    %% Plots
     figure, set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
     subplot(1,2,1), imshow(rgbOriginal), title('Original');
     subplot(1,2,2), imshow(quantizacaoCores), title('Cartoon');
     
-    imwrite(quantizacaoCores,'cartoonized.png');
-end
+    nome = sprintf('../results/cartoon/cartoonized_%d.png', num);  
+    imwrite(quantizacaoCores, nome);
+    
+end % for %
