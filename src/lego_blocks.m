@@ -1,10 +1,6 @@
 close all
 
-texture = imread('../texture/lego_block.bmp');
-texture = rgb2ycbcr(texture);
-texture = texture(:,:,1);
-%texture = imresize(texture, size(texture)/2);
-texture = texture * 2;
+texture = imread('../texture/lego_block_texture.bmp');
 texSize = size(texture);
 
 image = imread('../images/star-wars-7-the-force-awakens-could-kylo-ren-really-be-a-skywalker-668067.jpg');
