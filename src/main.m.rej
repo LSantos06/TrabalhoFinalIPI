@@ -1,0 +1,10 @@
+diff a/src/main.m b/src/main.m	(rejected hunks)
+@@ -17,6 +17,6 @@
+ 
+ %% Morphological operations:
+ ThickEdges = imdilate(Edges, strel('square', 2));
+-
++imshowpair(ThickEdges, RGBoriginal, 'blend') %Retirar da versão final!
+ %% Edge filter:
+ %TODO
+\ No newline at end of file

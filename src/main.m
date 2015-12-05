@@ -1,9 +1,9 @@
 %% Universidade de Brasilia
 % Introducao ao Processamento de Imagens 2015/2
 % Trabalho Final
-% Grupo: Danillo Neves - 14/01, 
+% Grupo: Danillo Neves - 14/0135839
 %        Lucas Santos - 14/0151010 e
-%        Ricardo Kury - 14/01
+%        Ricardo Kury - 14/0161082
 
 % Tema 7 - Filtro Cartoon
 
