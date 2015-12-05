@@ -15,11 +15,12 @@ diretorio = dir ('*.jpg');
 numeroImagens = length(diretorio);
 
 % Percorrendo o diretorio, uma imagem por vez
-for num = 1:numeroImagens
+for num = 1:1
     
     %% Deteccao das bordas
     % Lendo as imagens
-    imagemOriginal = imread(diretorio(num).name);
+    imagemOriginal = imread('../images/brasilia.jpg');
+    %imagemOriginal = imread(diretorio(num).name);
     %figure, imshow(imagemOriginal), title('Imagem Original');
 
     % Guardando a imagem original em rgb
@@ -86,4 +87,6 @@ for num = 1:numeroImagens
     figure, set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
     subplot(1,2,1), imshow(rgbOriginal), title('Original');
     subplot(1,2,2), imshow(quantizacaoCores), title('Cartoon');
+    
+    imwrite(quantizacaoCores,'cartoonized.png');
 end

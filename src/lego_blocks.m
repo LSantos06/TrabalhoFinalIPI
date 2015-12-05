@@ -3,7 +3,7 @@ close all
 texture = imread('../texture/lego_block_texture.bmp');
 texSize = size(texture);
 
-image = imread('../images/star-wars-7-the-force-awakens-could-kylo-ren-really-be-a-skywalker-668067.jpg');
+image = imread('../images/van-gogh.jpg');
 imgSize = size(image);
 imgSize(1:2) = imgSize(1:2)+(texSize-mod(imgSize(1:2), texSize));
 image = imresize(image, imgSize(1:2));
@@ -27,3 +27,4 @@ for i = 1:imgSize(1)
     end
 end
 imshow(uint8(result));
+imwrite(uint8(result),'legolized.png');
