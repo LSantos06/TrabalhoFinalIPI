@@ -20,11 +20,9 @@ numeroImagens = length(diretorio);
 
 % Percorrendo o diretorio, uma imagem por vez
 for num = 1:numeroImagens
-
     %% Leitura e tamanhos
     % Lendo e obtendo o tamanho da imagem a ser texturizada
     imagemOriginal = imread(diretorio(num).name);
-    %imagemOriginal = imread(diretorio(num).name);
     tamanhoImagemOriginal = size(imagemOriginal);
     
     % Ajustando o tamanho da textura ao tamanho da imagem a ser texturizada

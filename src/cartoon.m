@@ -15,12 +15,11 @@ diretorio = dir ('*.jpg');
 numeroImagens = length(diretorio);
 
 % Percorrendo o diretorio, uma imagem por vez
-for num = 1:1
+for num = 1:numeroImagens
     
     %% Deteccao das bordas
     % Lendo as imagens
-    imagemOriginal = imread('../images/brasilia.jpg');
-    %imagemOriginal = imread(diretorio(num).name);
+    imagemOriginal = imread(diretorio(num).name);
     %figure, imshow(imagemOriginal), title('Imagem Original');
 
     % Guardando a imagem original em rgb
